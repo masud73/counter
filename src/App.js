@@ -20,7 +20,7 @@ function App()
         }
         else
         {
-            return false;
+            return;
         }
     }
 

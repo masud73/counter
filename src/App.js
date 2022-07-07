@@ -86,7 +86,8 @@ function App()
                     />
                 </section>
             </main>
-            <footer><small>Created by <b>Masud</b>. Follow me on Twitter <a href='https://www.twitter.com/____masud'>@____masud</a></small></footer>
+            <footer><small>Created by <b>Masud</b>. Follow me on Twitter
+            <a href='https://www.twitter.com/____masud' target='_blank' rel='noopener noreferrer'>@____masud</a></small></footer>
         </React.Fragment>
     );
 }

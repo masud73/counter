@@ -7,11 +7,28 @@ import './App.css';
 
 
 
+function enableBtn(btn)
+{
+    btn.classList.remove('disabled');
+    btn.disabled = false;
+}
+
+function disableBtn(btn)
+{
+    btn.classList.add('disabled');
+    btn.disabled = true;
+}
+
+
 function App()
 {
     const [count, setCount] = useState(0);
     const [lastCount, setLastCount] = useState(count);
     const [highestCount, setHighesttCount] = useState(0);
+
+    // Auto count
+    const [isCounting, setCounting] = useState(false);
+    const [startOrContinue, setStartOrContinue] = useState('Start auto count');
 
     const increase = () => {
         setCount((prevcount) => prevcount + 1);
@@ -24,12 +41,42 @@ function App()
         }
         else
         {
+            const btn_increase = document.querySelector('#increase');
+            enableBtn(btn_increase);
             return;
+        }
+    }
+
+    const autoCount = () => {
+        const btn_increase = document.querySelector('#increase');
+        const btn_decrease = document.querySelector('#decrease');
+        const btn_reset = document.querySelector('#reset');
+
+        disableBtn(btn_increase);
+        disableBtn(btn_decrease);
+        
+        if (count >= 1)
+        {
+            enableBtn(btn_reset);
+            setStartOrContinue('Continue');
+        }
+
+        if (!isCounting)
+        {
+            setCounting(true);
+        }
+        else
+        {
+            setCounting(false);
+            enableBtn(btn_increase);
         }
     }
 
     const reset = () => {
         setLastCount(count);
+        setCounting(false);
+        setStartOrContinue('Start auto count');
+
         localStorage.setItem('lastCount', count);
 
         if (count > highestCount)
@@ -38,6 +85,9 @@ function App()
             localStorage.setItem('highestCount', count);
         }
         setCount(0);
+
+        const btn_increase = document.querySelector('#increase');
+        enableBtn(btn_increase);
     }
 
     const clearHistory = () => {
@@ -56,7 +106,11 @@ function App()
             btn.disabled = true;
         });
 
-        document.querySelector('#increase').disabled = false;
+        const btn_increase = document.querySelector('#increase');
+        const btn_auto = document.querySelector('#auto');
+
+        enableBtn(btn_increase);
+        enableBtn(btn_auto);
 
         const value = localStorage.getItem('value');
         const last_count = localStorage.getItem('lastCount');
@@ -86,19 +140,14 @@ function App()
 
         if (count > 0)
         {
-            btn_decrease.disabled = false;
-            btn_reset.disabled = false;
-            btn_decrease.classList.remove('disabled');
-            btn_reset.classList.remove('disabled');
+            enableBtn(btn_decrease);
+            enableBtn(btn_reset);
         }
         else
         {
-            btn_decrease.disabled = true;
-            btn_reset.disabled = true;
-            btn_decrease.classList.add('disabled');
-            btn_reset.classList.add('disabled');
+            disableBtn(btn_decrease);
+            disableBtn(btn_reset);
         }
-
     });
 
     // Re-render only when count changes
@@ -117,6 +166,14 @@ function App()
                 </section>
                 <section  className='btns-wrapper'>
                     <Buttons reset={reset} increase={increase} decrease={decrease} />
+                </section>
+                <section className='flex btn-auto-con'>
+                    <Button
+                        id='auto'
+                        name={isCounting ? 'Stop' : startOrContinue}
+                        title={isCounting ? 'Stop automatic counting' : 'Click to start automatic count'}
+                        handleClick={autoCount}
+                    />
                 </section>
                 <section className='history-container'>
                     <History lastCount={lastCount} HighestCount={highestCount} clearHistory={clearHistory} />

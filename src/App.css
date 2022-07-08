@@ -82,6 +82,17 @@ section.btns-wrapper {
     flex-wrap: wrap-reverse;
 }
 
+section.btn-auto-con {
+    width: 100%;
+    justify-content: center;
+}
+
+section.btn-auto-con button {
+    width: 100%;
+    background-color: transparent;
+    color: chocolate;
+}
+
 section.history-container {
     padding: 1rem;
     margin-top: 2rem;

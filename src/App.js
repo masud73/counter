@@ -2,33 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { Twitter } from 'react-bootstrap-icons';
 
 import Button from './components/Button';
-
+import Modal from './components/modal';
+import { enableBtn, disableBtn } from './static/disabled';
 import './App.css';
 
-
-
-function enableBtn(btn)
-{
-    btn.classList.remove('disabled');
-    btn.disabled = false;
-}
-
-function disableBtn(btn)
-{
-    btn.classList.add('disabled');
-    btn.disabled = true;
-}
 
 
 function App()
 {
     const [count, setCount] = useState(0);
     const [lastCount, setLastCount] = useState(count);
-    const [highestCount, setHighesttCount] = useState(0);
+    const [highestCount, setHighestCount] = useState(0);
+    const [speedValue, setSpeedValue] = useState(1000);
 
-    // Auto count
     const [isCounting, setCounting] = useState(false);
     const [startOrContinue, setStartOrContinue] = useState('Start auto count');
+
+    const [btnIncrease, setBtnIncrease] = useState(null);
+    const [btnDecrease, setBtnDecrease] = useState(null);
+
 
     const increase = () => {
         setCount((prevcount) => prevcount + 1);
@@ -41,60 +33,77 @@ function App()
         }
         else
         {
-            const btn_increase = document.querySelector('#increase');
-            enableBtn(btn_increase);
             return;
-        }
-    }
-
-    const autoCount = () => {
-        const btn_increase = document.querySelector('#increase');
-        const btn_decrease = document.querySelector('#decrease');
-        const btn_reset = document.querySelector('#reset');
-
-        disableBtn(btn_increase);
-        disableBtn(btn_decrease);
-        
-        if (count >= 1)
-        {
-            enableBtn(btn_reset);
-            setStartOrContinue('Continue');
-        }
-
-        if (!isCounting)
-        {
-            setCounting(true);
-        }
-        else
-        {
-            setCounting(false);
-            enableBtn(btn_increase);
         }
     }
 
     const reset = () => {
         setLastCount(count);
         setCounting(false);
+        setSpeedValue(1000);
         setStartOrContinue('Start auto count');
 
         localStorage.setItem('lastCount', count);
 
         if (count > highestCount)
         {
-            setHighesttCount(count);
+            setHighestCount(count);
             localStorage.setItem('highestCount', count);
         }
         setCount(0);
+        enableBtn(btnIncrease);
+    }
 
-        const btn_increase = document.querySelector('#increase');
-        enableBtn(btn_increase);
+    const autoCount = () => {
+        if (!isCounting && count <= 0)
+        {
+            document.querySelector('.modal').style.display = 'flex';
+        }
+
+        if (isCounting)
+        {
+            setStartOrContinue('Continue');
+            setCounting(false);
+            enableBtn(btnIncrease);
+        }
+
+        if (!isCounting && count >= 1)
+        {
+            setCounting(true);
+            disableBtn(btnDecrease);
+            disableBtn(btnIncrease);
+        }
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        document.querySelector('.modal').style.display = 'none';
+        
+        disableBtn(btnIncrease);
+        disableBtn(btnDecrease);
+        
+
+        if (!isCounting)
+        {
+            setCounting(true);
+            disableBtn(btnDecrease);
+        }
+        else
+        {
+            setCounting(false);
+            enableBtn(btnIncrease);
+        }
+    }
+
+    const handleChange = (event) => {
+        setSpeedValue(event.target.value);
     }
 
     const clearHistory = () => {
         if (lastCount !== 0 || highestCount !== 0)
         {
             setLastCount(0);
-            setHighesttCount(0);
+            setHighestCount(0);
             localStorage.setItem('lastCount', 0);
             localStorage.setItem('highestCount', 0);
         }
@@ -107,40 +116,35 @@ function App()
         });
 
         const btn_increase = document.querySelector('#increase');
+        const btn_decrease = document.querySelector('#decrease');
         const btn_auto = document.querySelector('#auto');
+        const btn_start = document.querySelector('#btn-start');
+
+        setBtnIncrease(btn_increase);
+        setBtnDecrease(btn_decrease);
 
         enableBtn(btn_increase);
         enableBtn(btn_auto);
+        enableBtn(btn_start);
 
         const value = localStorage.getItem('value');
         const last_count = localStorage.getItem('lastCount');
         const highest_count = localStorage.getItem('highestCount');
 
-        if (value)
-        {
-            setCount(Number(value));
-        }
+        if (value) setCount(Number(value));
+        if (last_count) setLastCount(Number(last_count));
+        if (highest_count) setHighestCount(highest_count);
 
-        if (last_count)
-        {
-            setLastCount(Number(last_count));
-        }
-
-        if (highest_count)
-        {
-            setHighesttCount(highest_count);
-        }
-        
     }, []);
 
-    // Re-render anytime when changes detected
+    // Re-render whenever change detected
     useEffect(() => {
         const btn_decrease = document.querySelector('#decrease');
         const btn_reset = document.querySelector('#reset');
 
         if (count > 0)
         {
-            enableBtn(btn_decrease);
+            if (!isCounting) enableBtn(btn_decrease);
             enableBtn(btn_reset);
         }
         else
@@ -150,13 +154,27 @@ function App()
         }
     });
 
-    // Re-render only when count changes
+    // Re-render only when count change
     useEffect(() => {
         localStorage.setItem('value', count);
     }, [count]);
 
+    // Re-render only when isCounting change
+    useEffect(() => {
+        if (isCounting)
+        {
+            var timer = setInterval(() => {
+                setCount((prevcount) => prevcount + 1);
+            }, speedValue);
+        }
+        return () => {
+            clearInterval(timer);
+        }
+    }, [isCounting]);
+
     return (
         <React.Fragment>
+            <Modal handleChange={handleChange} handleSubmit={handleSubmit} speedValue={speedValue} />
             <main>
                 <header>
                     <h1>Smart Counter</h1>
@@ -171,7 +189,7 @@ function App()
                     <Button
                         id='auto'
                         name={isCounting ? 'Stop' : startOrContinue}
-                        title={isCounting ? 'Stop automatic counting' : 'Click to start automatic count'}
+                        title={isCounting ? 'Stop auto count' : startOrContinue}
                         handleClick={autoCount}
                     />
                 </section>
@@ -183,7 +201,6 @@ function App()
         </React.Fragment>
     );
 }
-
 
 function Buttons(props)
 {
@@ -206,13 +223,12 @@ function Buttons(props)
             <Button
                 id='increase'
                 name='Increase'
-                title='Add count'
+                title='Add count manually'
                 handleClick={props.increase}
             />
         </React.Fragment>
     );
 }
-
 
 function History(props)
 {
@@ -234,7 +250,6 @@ function History(props)
     );
 }
 
-
 function Footer()
 {
     return (
@@ -242,6 +257,5 @@ function Footer()
         <a href='https://www.twitter.com/____masud' target='_blank' rel='noopener noreferrer'> <Twitter style={{verticalAlign: 'middle'}} /> @____masud</a></small></footer>
     );
 }
-
 
 export default App;

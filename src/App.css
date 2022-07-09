@@ -9,7 +9,9 @@ html {
 }
 
 h1,
-h2 {
+h2,
+h3,
+h4 {
     padding: 0;
     margin: 0;
     color: var(--color-black);
@@ -28,6 +30,12 @@ body {
     justify-content: center;
     align-items: center;
     background-color: rgb(241, 243, 244);
+}
+
+.flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 main {
@@ -107,7 +115,6 @@ section.history-container div:first-child {
 section.history-container div h3 {
     color: #5f6a75;
     font-weight: 400;
-    margin: 0;
     margin-right: 1rem;
 }
 
@@ -140,8 +147,81 @@ section.history-container div span:hover {
     margin-right: 1rem;
 }
 
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.3);
+    justify-content: center;
+    z-index: 9999;
+    display: none;
+}
+
+.modal-content {
+    min-width: 14rem;
+    border-radius: 10px;
+    background-color: #fff;
+    padding: .6rem 1.2rem;
+    margin: 1rem;
+    animation: scale-in .2s;
+    -webkit-animation: scale-in .2s;
+}
+
+@keyframes scale-in {
+    from {transform: scale(.7);}
+    to {transform: scale(1);}
+}
+
+@-webkit-keyframes scale-in {
+    from {transform: scale(.7);}
+    to {transform: scale(1);}
+}
+
+.modal-content header svg {
+    transition: .2s;
+    border-radius: 50%;
+    height: auto;
+    width: auto;
+    cursor: pointer;
+    margin-right: -.5rem;
+    padding: .5rem;
+    font-size: 1.3rem;
+}
+
+.modal-content header svg:hover {
+    background-color: #eeecec;
+}
+
+.modal-title {
+    width: 100%;
+}
+
+form {
+    flex-direction: column;
+    margin-top: 1.2rem;
+}
+
+
+form label {
+    align-self: flex-start;
+    justify-self: flex-start;
+    font-size: .9em;
+}
+
+form select {
+    width: 100%;
+    margin: .6rem 0;
+    padding: .8rem;
+}
+
+form button {
+    width: 100%;
+    margin-top: 1rem;
+}
+
 footer {
-    /* width: 100%; */
     text-align: center;
     margin-top: 3rem;
     font-size: 1em;
@@ -158,12 +238,6 @@ footer a {
 footer a:hover { text-decoration: underline; }
 
 footer small b { color: #002; }
-
-.flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
 
 
 @media screen and (max-width: 490px) {
@@ -184,5 +258,14 @@ footer small b { color: #002; }
     }
     section.history-container {
         width: 100%;
+    }
+}
+
+@media screen and (max-width: 280px) {
+    .modal-content {
+        height: 100vh;
+        width: 100vw;
+        border-radius: 0px;
+        margin: 0;
     }
 }

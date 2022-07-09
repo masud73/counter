@@ -1,1 +1,1 @@
-This is a React Counter app
+<h1>This is a React Counter app</h1>

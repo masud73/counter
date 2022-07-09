@@ -203,14 +203,13 @@ form {
     margin-top: 1.2rem;
 }
 
-
-form label {
+label {
     align-self: flex-start;
     justify-self: flex-start;
     font-size: .9em;
 }
 
-form select {
+select {
     width: 100%;
     margin: .6rem 0;
     padding: .8rem;

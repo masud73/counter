@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Twitter } from 'react-bootstrap-icons';
 
 import Button from './components/Button';
-import Modal from './components/modal';
+import Modal from './components/Modal';
 import { enableBtn, disableBtn } from './static/disabled';
 import './App.css';
 
@@ -13,6 +13,7 @@ function App()
     const [count, setCount] = useState(0);
     const [lastCount, setLastCount] = useState(count);
     const [highestCount, setHighestCount] = useState(0);
+    const [allCount, setAllCount] = useState(0);
     const [speedValue, setSpeedValue] = useState(1000);
 
     const [isCounting, setCounting] = useState(false);
@@ -39,17 +40,20 @@ function App()
 
     const reset = () => {
         setLastCount(count);
+        setAllCount((prevcount) => prevcount + count);
         setCounting(false);
         setSpeedValue(1000);
         setStartOrContinue('Start auto count');
 
         localStorage.setItem('lastCount', count);
+        localStorage.setItem('allCount', allCount + count);
 
         if (count > highestCount)
         {
             setHighestCount(count);
             localStorage.setItem('highestCount', count);
         }
+
         setCount(0);
         enableBtn(btnIncrease);
     }
@@ -100,12 +104,14 @@ function App()
     }
 
     const clearHistory = () => {
-        if (lastCount !== 0 || highestCount !== 0)
+        if (lastCount !== 0 || highestCount !== 0 || allCount !== 0)
         {
             setLastCount(0);
+            setAllCount(0);
             setHighestCount(0);
             localStorage.setItem('lastCount', 0);
             localStorage.setItem('highestCount', 0);
+            localStorage.setItem('allCount', 0);
         }
     }
 
@@ -130,10 +136,12 @@ function App()
         const value = localStorage.getItem('value');
         const last_count = localStorage.getItem('lastCount');
         const highest_count = localStorage.getItem('highestCount');
+        const all_count = localStorage.getItem('allCount');
 
         if (value) setCount(Number(value));
         if (last_count) setLastCount(Number(last_count));
         if (highest_count) setHighestCount(highest_count);
+        if (all_count) setAllCount(Number(all_count));
 
     }, []);
 
@@ -194,7 +202,7 @@ function App()
                     />
                 </section>
                 <section className='history-container'>
-                    <History lastCount={lastCount} HighestCount={highestCount} clearHistory={clearHistory} />
+                    <History lastCount={lastCount} HighestCount={highestCount} clearHistory={clearHistory} allCount={allCount} />
                 </section>
             </main>
             <Footer />
@@ -239,12 +247,16 @@ function History(props)
                 <span role='button' title='Clear all history (This cannot be reversed)' onClick={props.clearHistory}>Clear history</span>
             </div>
             <div className='flex history'>
-                <p>Total last count</p>
+                <p>Last count</p>
                 <p>{props.lastCount}</p>
             </div>
             <div className='flex history'>
                 <p>Highest count</p>
                 <p>{props.HighestCount}</p>
+            </div>
+            <div className='flex history'>
+                <p>Total all count</p>
+                <p>{props.allCount}</p>
             </div>
         </React.Fragment>
     );

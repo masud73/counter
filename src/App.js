@@ -265,7 +265,7 @@ function History(props)
 function Footer()
 {
     return (
-        <footer><small>Created by <b>Masud</b>. Follow me on Twitter
+        <footer><small>Created by <a style={{textDecoration: 'underline', color: '#000'}} href='https://masud73-portfolio.netlify.app' target='_blank' rel='noopener noreferrer'><b>Masud</b>.</a> Follow me on Twitter
         <a href='https://www.twitter.com/____masud' target='_blank' rel='noopener noreferrer'> <Twitter style={{verticalAlign: 'middle'}} /> @____masud</a></small></footer>
     );
 }
